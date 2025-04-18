@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ForgotPassword from './pages/ForgotPassword';
+import HealthCheck from './pages/HealthCheck';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import PasswordSent from './pages/PasswordSent';
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/password-sent" element={<PasswordSent />} />
+        <Route path="/health" element={<HealthCheck />} />
       </Route>
     </Routes>
   );

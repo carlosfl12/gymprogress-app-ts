@@ -1,54 +1,76 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
-  const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setMessage('')
+
+    try {
+      const res = await fetch('http://localhost:8000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setMessage(data.error || 'Error al registrar.')
+        return
+      }
+
+      setMessage(data.message)
+      setTimeout(() => {
+        navigate('/login')
+      }, 1500)
+    } catch (err) {
+      setMessage('Error de conexión con el servidor.')
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center">Crear cuenta</h2>
-        <form className="space-y-4">
-          <div>
-            <label className="block mb-1">Nombre</label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Tu nombre"
-            />
-          </div>
-          <div>
-            <label className="block mb-1">Email</label>
-            <input
-              type="email"
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="correo@ejemplo.com"
-            />
-          </div>
-          <div>
-            <label className="block mb-1">Contraseña</label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                className="w-full px-4 py-2 pr-10 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-400 hover:text-blue-300"
-                onClick={() => setShowPassword((prev) => !prev)}
-              >
-                {showPassword ? 'Ocultar' : 'Ver'}
-              </button>
-            </div>
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition"
-          >
-            Registrarse
-          </button>
-        </form>
-      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md space-y-4"
+      >
+        <h2 className="text-2xl font-bold text-center mb-2">Registro</h2>
+
+        <input
+          type="email"
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none"
+          required
+        />
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none"
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 transition py-2 rounded-lg font-semibold"
+        >
+          Registrarse
+        </button>
+
+        {message && (
+          <p className="text-sm text-center text-gray-300 mt-2">{message}</p>
+        )}
+      </form>
     </div>
   )
 }
