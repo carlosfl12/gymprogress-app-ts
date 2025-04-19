@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
@@ -21,11 +22,14 @@ const Register = () => {
       const data = await res.json()
 
       if (!res.ok) {
-        setMessage(data.error || 'Error al registrar.')
+        toast.error(data.error || 'Error al registrar.')
         return
       }
 
-      setMessage(data.message)
+      toast.success('Usuario registrado correctamente.')
+      setEmail('')
+      setPassword('')
+      
       setTimeout(() => {
         navigate('/login')
       }, 1500)

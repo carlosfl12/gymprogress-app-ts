@@ -1,20 +1,63 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setMessage('')
+
+    try {
+      const res = await fetch('http://localhost:8000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json()
+      console.log(data)
+      if (!res.ok) {
+        toast.error(data.error || 'Error al iniciar sesión.')
+        return
+      }
+
+      toast.success('Inicio de sesión exitoso.')
+      
+      // Tener guardado el token en el localStorage para usarlo en las peticiones
+      localStorage.setItem('token', data.token)
+
+      setEmail('')
+      setPassword('')
+
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 1500)
+    } catch (err) {
+      setMessage('Error de conexión con el servidor.')
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
       <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl shadow-lg">
         <h2 className="text-2xl font-bold mb-6 text-center">Iniciar sesión</h2>
-        <form className="space-y-4">
+        <form className="space-y-4"
+        onSubmit={handleSubmit}>
           <div>
             <label className="block mb-1">Email</label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="correo@ejemplo.com"
+              required
             />
           </div>
           <div>
@@ -22,8 +65,11 @@ const Login = () => {
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-2 pr-10 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="••••••••"
+                required
               />
               <button
                 type="button"

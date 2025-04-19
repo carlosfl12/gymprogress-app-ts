@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
 import ForgotPassword from './pages/ForgotPassword';
 import HealthCheck from './pages/HealthCheck';
 import Home from './pages/Home';
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/password-sent" element={<PasswordSent />} />
         <Route path="/health" element={<HealthCheck />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
     </Routes>
   );
